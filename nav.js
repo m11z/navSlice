@@ -28,11 +28,11 @@
       firstItemTopPosition,
       lvlOneClass,
       slicedTotalWidth = 0,
-      moreButtonWidth = 120,
       sliced = [],
       settings = {},
       defaults = {
         classes: {
+          init: 'navslice-init',
           more: 'navslice-more',
           moreTitle: 'navslice-more-title',
           moreDropdown: 'navslice-more-dropdown',
@@ -42,7 +42,8 @@
         },
         caption: {
           more: 'More'
-        }
+        },
+        moreWidth: 120,
       };
 
     // The actual plugin constructor
@@ -154,6 +155,12 @@
 
         });
 
+        if ( more ) {
+          $dom.nav
+            .addClass(settings.classes.init)
+            .css('padding-right', settings.moreWidth);
+          } 
+
         for ( var i = 0; i < sliced.length; i++ ) {
           if ( sliced[i] != undefined ) {
             slicedTotalWidth += sliced[i].data.width;
@@ -162,7 +169,7 @@
 
         for ( var i = 0; i < sliced.length; i++ ) {
           if ( sliced[i] != undefined ) {
-            sliced[i].data.showWidth = sliced[i].data.total + slicedTotalWidth + moreButtonWidth;
+            sliced[i].data.showWidth = sliced[i].data.total + slicedTotalWidth + settings.moreWidth;
           }
         }
 
@@ -186,7 +193,7 @@
         };
 
         // Return html string to variable
-        $dom.moreButton = '<' + navListTag + ' class="' + settings.classes.moreButton + '"><span class="' + settings.classes.moreTitle + '">' + settings.caption.more + '</span><ul class="' + settings.classes.moreDropdown + '"></ul></ ' + navListTag + '>';
+        $dom.moreButton = '<' + navListTag + ' class="' + settings.classes.moreButton + '"><span class="' + settings.classes.moreTitle + '">' + settings.caption.more + '</span><ul class="' + settings.classes.moreDropdown + '"></ul></' + navListTag + '>';
 
       },
 
@@ -211,11 +218,11 @@
         var winWidth = $window.width(),
             _sliced;
 
-        $.each(sliced, function(i, value) {
+        for ( var i = 0; i < sliced.length; i++ ) {
+          if ( sliced[i] != undefined ) {
 
-          if ( value != null ) {
-            var $cur = value.item,
-                curTotal = value.data.total;
+            var $cur = sliced[i].item,
+                curTotal = sliced[i].data.total;
 
             $cur.appendTo($dom.moreDropdown);
 
@@ -231,13 +238,17 @@
               }
             }
           }
-        });
+        }
 
       },
 
       destroy: function () {
 
         $dom.moreButton.remove();
+
+        $dom.nav
+          .removeClass(settings.classes.init)
+          .css('padding-right', 0);
 
         more = false,
         moreButton = false,
@@ -260,9 +271,3 @@
     };
 
 })( jQuery, window, document );
-
-$(document).ready( function () {
-
-  $('.header__nav-list').navSlice();
-
-});
